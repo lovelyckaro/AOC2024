@@ -2,22 +2,22 @@
 
 ![ormolu](https://github.com/lovelyckaro/AOC2023/actions/workflows/format-checker.yml/badge.svg)
 
-Run a day using `cabal run day[number]`, e.g. `cabal run day3`.
+Dependencies:
+* GHC >= 9.10.1
+* Cabal >= 3.12.1.0
 
-In .aoc put one line with year, and one with a session cookie, see .aoc.example for example.
+Run a day using `./aoc day [part]`, e.g. `./aoc 1` or `./aoc 15 2`.
 
-To fetch a days description and your input use:
+Four environment values are used, see .env.example for example.
 
+Description, example input, and input are fetched on run to `/descr` and `/input`.
+
+To run run with example input run with switch `--example`
 ```bash
-cabal run fetch [day]
+./aoc 1 2 --example
 ```
 
-Days should save solutions in `./answer/day[number]-part[number]`
-To actually submit your solutions use
-
+To actually submit usage run with switch `--submit`
 ```bash
-cabal run submit [day] [part]
+./aoc 1 2 --submit
 ```
-
-To build my solutions you're going to need a decently recent version of GHC,
-since I use GHC2021. I've built them all using GHC 9.4.7.

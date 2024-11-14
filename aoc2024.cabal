@@ -3,7 +3,7 @@ name:               aoc2024
 version:            0.1.0.0
 
 -- A short (one-line) description of the package.
-synopsis: Loves solutions for advent of code 2023
+synopsis: Loves solutions for advent of code 2024
 
 -- A longer description of the package.
 -- description:
@@ -36,7 +36,7 @@ library
     base >= 4.20,
     advent-of-code-api >= 0.2.8.0,
     containers,
-    text,
+    text >= 2.1.2,
     tagsoup,
     vector,
     megaparsec,
