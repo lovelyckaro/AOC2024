@@ -39,6 +39,9 @@ import Text.Pandoc
 htmlToMd :: Text -> IO Text
 htmlToMd html = runIOorExplode $ readHtml def html >>= writeMarkdown def
 
+htmlToAnsi :: Text -> IO Text
+htmlToAnsi html = runIOorExplode $ readHtml def html >>= writeANSI def
+
 getOpts :: IO AoCOpts
 getOpts = do
   year <- read <$> getEnv "AOC_YEAR"
@@ -80,7 +83,10 @@ getInput :: Day -> IO Text
 getInput n = TIO.readFile ("input/day" <> show (dayInt n) <> ".input")
 
 submitAnswer :: AoCOpts -> Day -> Part -> Text -> IO (Text, SubmitRes)
-submitAnswer opts day part ans = runAoC_ opts $ AoCSubmit day part $ T.unpack ans
+submitAnswer opts day part ans = do
+  (response, submitRes) <- runAoC_ opts $ AoCSubmit day part $ T.unpack ans
+  ansi <- htmlToAnsi response
+  return (ansi, submitRes)
 
 -- Common, useful algorithms:
 readText :: (Read a) => Text -> a

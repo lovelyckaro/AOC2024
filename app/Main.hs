@@ -1,8 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Main where
 
 import Control.Monad (guard, when, (>=>))
+import Data.Text (Text)
+import Data.Text qualified as T
 import Data.Text.IO qualified as TIO
 import Options.Applicative
 import SantaLib
@@ -41,6 +44,9 @@ partReader = maybeReader $ \str -> do
 configInfo :: ParserInfo RunConfiguration
 configInfo = info (configParser <**> helper) fullDesc
 
+unsolvedMessage :: Day -> Part -> Text
+unsolvedMessage day part = "Day " <> T.show (dayInt day) <> ", part " <> T.show (partInt part) <> " is unsolved"
+
 main :: IO ()
 main = do
   RunConfiguration {..} <- execParser configInfo
@@ -53,14 +59,14 @@ main = do
   let partSol = partSolution sol part
   answer <- case partSol of
     Unsolved -> do
-      putStrLn ("Day " <> show (dayInt day) <> ", Part " <> show (partInt part) <> " is unsolved.")
+      TIO.putStrLn (unsolvedMessage day part)
       exitFailure
     Solved answer -> answer input
   TIO.putStrLn answer
   if submit
     then do
-      (_, result) <- submitAnswer aocOptions day part answer
-      putStrLn (showSubmitRes result)
+      (response, result) <- submitAnswer aocOptions day part answer
+      TIO.putStrLn (T.pack (showSubmitRes result) <> "\n" <> response)
       case result of
         SubCorrect _ -> exitSuccess
         _ -> exitFailure
