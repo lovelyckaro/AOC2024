@@ -1,59 +1,35 @@
 module Solutions
-  ( module Solutions.Day01,
-    module Solutions.Day02,
-    module Solutions.Day03,
-    module Solutions.Day04,
-    module Solutions.Day05,
-    module Solutions.Day06,
-    module Solutions.Day07,
-    module Solutions.Day08,
-    module Solutions.Day09,
-    module Solutions.Day10,
-    module Solutions.Day11,
-    module Solutions.Day12,
-    module Solutions.Day13,
-    module Solutions.Day14,
-    module Solutions.Day15,
-    module Solutions.Day16,
-    module Solutions.Day17,
-    module Solutions.Day18,
-    module Solutions.Day19,
-    module Solutions.Day20,
-    module Solutions.Day21,
-    module Solutions.Day22,
-    module Solutions.Day23,
-    module Solutions.Day24,
-    solution,
+  ( solution,
   )
 where
 
 import Data.Maybe (fromJust)
 import SantaLib
-import Solutions.Day01
-import Solutions.Day02
-import Solutions.Day03
-import Solutions.Day04
-import Solutions.Day05
-import Solutions.Day06
-import Solutions.Day07
-import Solutions.Day08
-import Solutions.Day09
-import Solutions.Day10
-import Solutions.Day11
-import Solutions.Day12
-import Solutions.Day13
-import Solutions.Day14
-import Solutions.Day15
-import Solutions.Day16
-import Solutions.Day17
-import Solutions.Day18
-import Solutions.Day19
-import Solutions.Day20
-import Solutions.Day21
-import Solutions.Day22
-import Solutions.Day23
-import Solutions.Day24
-import Solutions.Day25
+import Solutions.Day01 (day01)
+import Solutions.Day02 (day02)
+import Solutions.Day03 (day03)
+import Solutions.Day04 (day04)
+import Solutions.Day05 (day05)
+import Solutions.Day06 (day06)
+import Solutions.Day07 (day07)
+import Solutions.Day08 (day08)
+import Solutions.Day09 (day09)
+import Solutions.Day10 (day10)
+import Solutions.Day11 (day11)
+import Solutions.Day12 (day12)
+import Solutions.Day13 (day13)
+import Solutions.Day14 (day14)
+import Solutions.Day15 (day15)
+import Solutions.Day16 (day16)
+import Solutions.Day17 (day17)
+import Solutions.Day18 (day18)
+import Solutions.Day19 (day19)
+import Solutions.Day20 (day20)
+import Solutions.Day21 (day21)
+import Solutions.Day22 (day22)
+import Solutions.Day23 (day23)
+import Solutions.Day24 (day24)
+import Solutions.Day25 (day25)
 
 solution :: Day -> Solution
 solution day =
