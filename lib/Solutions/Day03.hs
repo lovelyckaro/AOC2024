@@ -1,7 +1,4 @@
-module Solutions.Day03
-  ( day03,
-  )
-where
+module Solutions.Day03 where
 
 import SantaLib hiding (part1, part2)
 import SantaLib.Parsing
