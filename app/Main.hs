@@ -14,9 +14,20 @@ import System.Exit (exitFailure, exitSuccess)
 import Text.Pretty.Simple (pPrint)
 import Text.Read (readMaybe)
 
+data InputSource = ExampleInput | AocUserInput | ExplicitInput Text
+  deriving (Show, Eq)
+
+inputSourceParser :: Parser InputSource
+inputSourceParser =
+  asum
+    [ ExampleInput <$ flag' True (long "example" <> short 'x' <> help "Use example input"),
+      ExplicitInput <$> option str (long "input" <> short 'i' <> help "Input for part" <> metavar "input"),
+      AocUserInput <$ flag True True (long "userInput" <> help "Use user input (default)")
+    ]
+
 data RunConfiguration = RunConfiguration
   { submit :: Bool,
-    useExampleInput :: Bool,
+    inputSource :: InputSource,
     day :: Day,
     part :: Part
   }
@@ -26,7 +37,7 @@ configParser :: Parser RunConfiguration
 configParser =
   RunConfiguration
     <$> switch (long "submit" <> short 's' <> help "Submit answer instead of just printing.")
-    <*> switch (long "example" <> short 'x' <> help "Use example input")
+    <*> inputSourceParser
     <*> (argument dayReader (help "Day to run" <> metavar "day") <|> option dayReader (long "day" <> short 'd' <> help "Day to run" <> metavar "day"))
     <*> (argument partReader (help "Part to run" <> metavar "part" <> value Part1) <|> option partReader (long "part" <> short 'p' <> help "Part to run" <> metavar "part"))
 
@@ -54,7 +65,10 @@ main = do
   fetchDescription aocOptions day
   actualInput <- fetchInput aocOptions day
   exampleInput <- getExample day
-  let input = if useExampleInput then exampleInput else actualInput
+  let input = case inputSource of
+        ExampleInput -> exampleInput
+        AocUserInput -> actualInput
+        ExplicitInput i -> i
   let sol = solution day
   let partSol = partSolution sol part
   answer <- case partSol of
