@@ -4,11 +4,16 @@
 module Main where
 
 import Control.Monad (guard, when, (>=>))
+import Control.Monad.IO.Class
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as TIO
+import Network.Wai.Handler.Warp (runEnv)
 import Options.Applicative
 import SantaLib
+import SantaLib.Service
+import SantaLib.Service (AocAPI)
+import Servant
 import Solutions
 import System.Exit (exitFailure, exitSuccess)
 import Text.Pretty.Simple (pPrint)
@@ -25,21 +30,31 @@ inputSourceParser =
       AocUserInput <$ flag True True (long "userInput" <> help "Use user input (default)")
     ]
 
-data RunConfiguration = RunConfiguration
-  { submit :: Bool,
-    inputSource :: InputSource,
-    day :: Day,
-    part :: Part
-  }
+data RunConfiguration
+  = Serve
+      { port :: Int
+      }
+  | RunConfiguration
+      { submit :: Bool,
+        inputSource :: InputSource,
+        day :: Day,
+        part :: Part
+      }
   deriving (Show)
 
-configParser :: Parser RunConfiguration
-configParser =
+cliConfigParser :: Parser RunConfiguration
+cliConfigParser =
   RunConfiguration
     <$> switch (long "submit" <> short 's' <> help "Submit answer instead of just printing.")
     <*> inputSourceParser
     <*> (argument dayReader (help "Day to run" <> metavar "day") <|> option dayReader (long "day" <> short 'd' <> help "Day to run" <> metavar "day"))
     <*> (argument partReader (help "Part to run" <> metavar "part" <> value Part1) <|> option partReader (long "part" <> short 'p' <> help "Part to run" <> metavar "part"))
+
+configParser :: Parser RunConfiguration
+configParser =
+  (Serve <$ flag' True (long "serve" <> help "Run as restful service"))
+    <*> option auto (long "port" <> short 'p' <> help "port" <> metavar "port" <> value 8080)
+      <|> cliConfigParser
 
 dayReader :: ReadM Day
 dayReader = maybeReader $ readMaybe >=> mkDay
@@ -58,9 +73,8 @@ configInfo = info (configParser <**> helper) fullDesc
 unsolvedMessage :: Day -> Part -> Text
 unsolvedMessage day part = "Day " <> T.show (dayInt day) <> ", part " <> T.show (partInt part) <> " is unsolved"
 
-main :: IO ()
-main = do
-  RunConfiguration {..} <- execParser configInfo
+runCli :: Bool -> InputSource -> Day -> Part -> IO ()
+runCli submit inputSource day part = do
   aocOptions <- getOpts
   fetchDescription aocOptions day
   actualInput <- fetchInput aocOptions day
@@ -85,3 +99,20 @@ main = do
         SubCorrect _ -> exitSuccess
         _ -> exitFailure
     else exitSuccess
+
+runServe :: Int -> IO ()
+runServe port = runEnv port $ serve aocApi handle
+  where
+    handle :: Day -> Part -> Text -> Handler Text
+    handle day part input = do
+      let sol = solution day
+      let partSol = partSolution sol part
+      case partSol of
+        Unsolved -> return $ unsolvedMessage day part
+        Solved ans -> liftIO (ans input)
+
+main :: IO ()
+main =
+  execParser configInfo >>= \case
+    RunConfiguration {..} -> runCli submit inputSource day part
+    Serve {..} -> runServe port
