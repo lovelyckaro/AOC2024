@@ -4,10 +4,12 @@ module SantaLib.Service where
 
 import Advent.Types
 import Control.Monad
+import Data.Aeson
 import Data.Bifunctor
 import Data.Proxy
 import Data.Text (Text)
 import Data.Text qualified as T
+import GHC.Generics
 import Servant.API
 import Text.Read (readEither, readMaybe)
 
@@ -34,12 +36,30 @@ instance FromHttpApiData Part where
   parseHeader = parseHeader >=> parsePart
   parseQueryParam = parsePart
 
+data AocSolutionRequest = AocSolutionRequest
+  { day :: Day,
+    part :: Part,
+    input :: Text
+  }
+  deriving (Show, Eq, Generic)
+
+instance ToJSON AocSolutionRequest
+
+instance FromJSON AocSolutionRequest
+
+data AocSolutionResponse = AocSolutionResponse
+  { req :: AocSolutionRequest,
+    answer :: Maybe Text
+  }
+  deriving (Show, Eq, Generic)
+
+instance ToJSON AocSolutionResponse
+
+instance FromJSON AocSolutionResponse
+
 type AocAPI =
-  "solve"
-    :> Capture "day" Day
-    :> Capture "part" Part
-    :> QueryParam' [Required, Strict] "input" Text
-    :> Post '[JSON] Text
+  ReqBody '[JSON] AocSolutionRequest
+    :> Post '[JSON] AocSolutionResponse
 
 aocApi :: Proxy AocAPI
 aocApi = Proxy @AocAPI

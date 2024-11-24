@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -103,13 +104,13 @@ runCli submit inputSource day part = do
 runServe :: Int -> IO ()
 runServe port = runEnv port $ serve aocApi handle
   where
-    handle :: Day -> Part -> Text -> Handler Text
-    handle day part input = do
-      let sol = solution day
-      let partSol = partSolution sol part
+    handle :: AocSolutionRequest -> Handler AocSolutionResponse
+    handle req = do
+      let sol = solution req.day
+      let partSol = partSolution sol req.part
       case partSol of
-        Unsolved -> return $ unsolvedMessage day part
-        Solved ans -> liftIO (ans input)
+        Unsolved -> return $ AocSolutionResponse req Nothing
+        Solved ans -> AocSolutionResponse req . Just <$> liftIO (ans req.input)
 
 main :: IO ()
 main =

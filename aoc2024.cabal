@@ -55,7 +55,8 @@ library
         replace-megaparsec,
         pretty-simple,
         pandoc,
-        servant
+        servant,
+        aeson
 
 executable aoc
     main-is:          Main.hs
