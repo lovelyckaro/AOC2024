@@ -1,5 +1,5 @@
 FROM ubuntu:latest AS build
-
+ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 
 # install dependencies
@@ -32,7 +32,9 @@ RUN \
 # install ghcup
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; \
     then curl https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup > /usr/bin/ghcup; \
-    else curl https://downloads.haskell.org/~ghcup/aarch64-linux-ghcup > /usr/bin/ghcup; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; \
+    then curl https://downloads.haskell.org/~ghcup/aarch64-linux-ghcup > /usr/bin/ghcup; \
+    else echo "Trying to build unsupported platform $TARGETPLATFORM" && exit 1; \
     fi; \
     chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGStrict
