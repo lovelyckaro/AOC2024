@@ -17,6 +17,7 @@ import SantaLib.Service (AocAPI)
 import Servant
 import Solutions
 import System.Exit (exitFailure, exitSuccess)
+import System.IO
 import Text.Pretty.Simple (pPrint)
 import Text.Read (readMaybe)
 
@@ -102,7 +103,10 @@ runCli submit inputSource day part = do
     else exitSuccess
 
 runServe :: Int -> IO ()
-runServe port = runEnv port $ serve aocApi handle
+runServe port = do
+  putStrLn $ "Aoc up and running on port: " <> show port
+  hFlush stdout
+  runEnv port $ serve aocApi handle
   where
     handle :: AocSolutionRequest -> Handler AocSolutionResponse
     handle req = do
