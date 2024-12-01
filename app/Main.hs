@@ -106,8 +106,10 @@ runServe :: Int -> IO ()
 runServe port = do
   putStrLn $ "Aoc up and running on port: " <> show port
   hFlush stdout
-  runEnv port $ serve aocApi handle
+  runEnv port $ serve aocApi $ health :<|> handle
   where
+    health :: Handler Text
+    health = return "ok"
     handle :: AocSolutionRequest -> Handler AocSolutionResponse
     handle req = do
       let sol = solution req.day

@@ -57,9 +57,15 @@ instance ToJSON AocSolutionResponse
 
 instance FromJSON AocSolutionResponse
 
+type HealthAPI = "health" :> Get '[JSON] Text
+
+healthApi :: Proxy HealthAPI
+healthApi = Proxy @HealthAPI
+
 type AocAPI =
-  ReqBody '[JSON] AocSolutionRequest
-    :> Post '[JSON] AocSolutionResponse
+  HealthAPI
+    :<|> ReqBody '[JSON] AocSolutionRequest
+      :> Post '[JSON] AocSolutionResponse
 
 aocApi :: Proxy AocAPI
 aocApi = Proxy @AocAPI
