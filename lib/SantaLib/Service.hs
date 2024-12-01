@@ -43,9 +43,27 @@ data AocSolutionRequest = AocSolutionRequest
   }
   deriving (Show, Eq, Generic)
 
-instance ToJSON AocSolutionRequest
+instance ToJSON AocSolutionRequest where
+  toJSON AocSolutionRequest {..} = object ["day" .= dayInt day, "part" .= partInt part, "input" .= input]
 
-instance FromJSON AocSolutionRequest
+instance FromJSON AocSolutionRequest where
+  parseJSON = withObject "AocSolutionRequest" $ \request ->
+    AocSolutionRequest
+      <$> parseDay request
+      <*> parsePart request
+      <*> (request .: "input")
+    where
+      parseDay req = do
+        day <- req .: "day"
+        case mkDay day of
+          Nothing -> fail $ "parsing day failed. Expected number between 1 and 25. actual: " <> show day
+          Just d -> return d
+      parsePart req = do
+        part :: Int <- req .: "part"
+        case part of
+          1 -> return Part1
+          2 -> return Part2
+          _ -> fail $ "parsing part failed. Expected number 1 or 2. actual: " <> show part
 
 data AocSolutionResponse = AocSolutionResponse
   { req :: AocSolutionRequest,
