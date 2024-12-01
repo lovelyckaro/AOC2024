@@ -83,7 +83,7 @@ healthApi = Proxy @HealthAPI
 type AocAPI =
   HealthAPI
     :<|> ReqBody '[JSON] AocSolutionRequest
-      :> Post '[JSON] AocSolutionResponse
+      :> Get '[JSON] AocSolutionResponse
 
 aocApi :: Proxy AocAPI
 aocApi = Proxy @AocAPI
