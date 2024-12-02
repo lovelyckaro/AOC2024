@@ -1,6 +1,6 @@
 module Solutions.Day02 where
 
-import Data.List
+import Data.List hiding (subsequences)
 import Data.Text (Text)
 import Data.Text qualified as T
 import SantaLib hiding (part1, part2)
@@ -21,14 +21,11 @@ decreases xs = and $ zipWith (>) xs (tail xs)
 grade :: [Int] -> Bool
 grade xs = incremental xs && (decreases xs || increases xs)
 
+subsequences :: [Int] -> [[Int]]
+subsequences nums = nums : zipWith (<>) (inits nums) (drop 1 $ tails nums)
+
 grade' :: [Int] -> Bool
-grade' xs = go [] xs || go [] (reverse xs)
-  where
-    go _acc [] = True
-    go _acc [x] = True
-    go acc (x : y : zs)
-      | x < y && y - x <= 3 && y - x >= 1 = go (x : acc) (y : zs)
-      | otherwise = grade (reverse acc <> (x : zs)) || grade (reverse acc <> (y : zs))
+grade' xs = any grade $ subsequences xs
 
 part1 :: PartSolution
 part1 = Solved $ \txt -> return . T.show . length . filter grade . pInp $ txt
