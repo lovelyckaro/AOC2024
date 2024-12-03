@@ -28,10 +28,10 @@ grade' :: [Int] -> Bool
 grade' xs = any grade $ subsequences xs
 
 part1 :: PartSolution
-part1 = Solved $ \txt -> return . T.show . length . filter grade . pInp $ txt
+part1 = Solved $ return . T.show . length . filter grade . pInp
 
 part2 :: PartSolution
-part2 = Solved $ \txt -> return . T.show . length . filter grade' . pInp $ txt
+part2 = Solved $ return . T.show . length . filter grade' . pInp
 
 day02 :: Solution
 day02 = Solution part1 part2

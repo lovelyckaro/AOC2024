@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module SantaLib.Parsing
   ( module Text.Megaparsec,
     module Text.Megaparsec.Char,
@@ -25,13 +27,14 @@ import Control.Monad (void)
 import Data.Char (isNumber)
 import Data.Function (on)
 import Data.List (groupBy)
+import Data.Text (Text)
 import Data.Void (Void)
 import System.Exit (exitFailure)
 import Text.Megaparsec hiding (getInput)
 import Text.Megaparsec.Char hiding (space)
 import Text.Megaparsec.Char.Lexer qualified as L
 
-type Parser = Parsec Void String
+type Parser = Parsec Void Text
 
 -- | My default space consumer, accepts only horizontal spaces, and uses // for
 -- line comments, /* */ define a block comment
@@ -54,15 +57,15 @@ lexemeSp :: Parser a -> Parser a
 lexemeSp = L.lexeme (void . optional . char $ ' ')
 
 -- | Parse symbol and (horizontal) white space following it
-symbol :: String -> Parser String
+symbol :: Text -> Parser Text
 symbol = L.symbol space
 
 -- | Parse symbol and consume following eol
-symbolLn :: String -> Parser String
+symbolLn :: Text -> Parser Text
 symbolLn = L.symbol (void eol)
 
 -- | Parse symbol and one or zero following ' '
-symbolSp :: String -> Parser String
+symbolSp :: Text -> Parser Text
 symbolSp = L.symbol (void . optional . char $ ' ')
 
 filterNums :: String -> [Int]
@@ -71,7 +74,7 @@ filterNums = map read . filter (all isNumber) . groupBy ((==) `on` isNumber)
 signed :: (Num n) => Parser n -> Parser n
 signed = L.signed space
 
-parseIO :: Parser a -> FilePath -> String -> IO a
+parseIO :: Parser a -> FilePath -> Text -> IO a
 parseIO parser path str = case parse parser path str of
   Left err -> putStrLn (errorBundlePretty err) >> exitFailure
   Right ok -> return ok
