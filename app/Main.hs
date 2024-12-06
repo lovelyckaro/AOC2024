@@ -91,7 +91,9 @@ runCli submit inputSource day part = do
     Unsolved -> do
       TIO.putStrLn (unsolvedMessage day part)
       exitFailure
-    Solved answer -> answer input
+    Solved answer -> do
+      putStrLn "Running solution"
+      answer input
   TIO.putStrLn answer
   if submit
     then do
