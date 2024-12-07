@@ -11,7 +11,7 @@ import SantaLib hiding (part1, part2)
 import SantaLib.Parsing
 import Text.Megaparsec.Char.Lexer qualified as Lex
 
-type Graph = Set (Int, Int)
+type Graph = (Set (Int, Int), (Int, Int, Int, Int))
 
 pos :: Parser (Int, Int)
 pos = do
@@ -37,7 +37,11 @@ pInp = do
     return (p, c)
   let obstacles = S.fromList . map fst . filter ((== '#') . snd) $ nodes
   let [(startPos, '^')] = filter ((== '^') . snd) nodes
-  return (obstacles, (startPos, North))
+  let maxCol = S.findMax $ S.map fst obstacles
+  let minCol = S.findMin $ S.map fst obstacles
+  let maxRow = S.findMax $ S.map snd obstacles
+  let minRow = S.findMin $ S.map snd obstacles
+  return ((obstacles, (minCol, maxCol, minRow, maxRow)), (startPos, North))
 
 step :: Position -> (Int, Int)
 step ((col, row), North) = (col, row - 1)
@@ -50,13 +54,9 @@ rotate (p, West) = (p, North)
 rotate (p, dir) = (p, succ dir)
 
 neighbors :: Graph -> Position -> Maybe Position
-neighbors g (p, dir) = do
+neighbors g@(obstacles, (minCol, maxCol, minRow, maxRow)) (p, dir) = do
   let (col', row') = step (p, dir)
-  let maxCol = S.findMax $ S.map fst g
-  let minCol = S.findMin $ S.map fst g
-  let maxRow = S.findMax $ S.map snd g
-  let minRow = S.findMin $ S.map snd g
-  if (col', row') `S.member` g
+  if (col', row') `S.member` obstacles
     then neighbors g (rotate (p, dir))
     else do
       guard (col' <= maxCol && col' >= minCol)
@@ -70,36 +70,23 @@ part1 = Solved $ \inp -> do
   let visitedPoints = S.fromList $ map fst visited
   return . T.show . S.size $ visitedPoints
 
-{-
-Create loops:
-brute force that shit, we have all the points the guard visits
-from the first puzzle.
-Replace them one by one with obstacles and detect if they loop
--}
-
 isLoop :: Position -> Graph -> Bool
 isLoop pos g = go g S.empty pos
   where
-    go g visited pos
-      | next == Nothing = False
-      | fromJust next `S.member` visited = True
-      | otherwise = go g (S.insert pos visited) (fromJust next)
-      where
-        next = neighbors g pos
+    go g visited pos = case neighbors g pos of
+      Nothing -> False
+      Just n -> n `S.member` visited || go g (S.insert pos visited) n
 
-possibleObstacleAdds :: Graph -> Position -> [(Int, Int)]
-possibleObstacleAdds g pos = S.toList $ S.fromList $ map fst visited
+possibleObstacleAdds :: Graph -> Position -> Set (Int, Int)
+possibleObstacleAdds g pos = S.fromList $ map fst visited
   where
     visited = connected (neighbors g) pos
 
-alternateGraphs :: Graph -> [(Int, Int)] -> [Graph]
-alternateGraphs g points = map (`S.insert` g) points
-
 part2 :: PartSolution
 part2 = Solved $ \inp -> do
-  (graph, start) <- parseIO pInp "<input>" inp
-  let possibleObstacles = possibleObstacleAdds graph start
-  let loops = foldr (\obstacle found -> if isLoop start (S.insert obstacle graph) then found + 1 else found) 0 possibleObstacles
+  (graph@(obstacles, bounds), start) <- parseIO pInp "<input>" inp
+  let possibleObstacles = S.delete (fst start) $ possibleObstacleAdds graph start
+  let loops = foldr (\obstacle found -> if isLoop start (S.insert obstacle obstacles, bounds) then found + 1 else found) 0 possibleObstacles
   return . T.show $ loops
 
 day06 :: Solution
