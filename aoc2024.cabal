@@ -56,7 +56,8 @@ library
         pretty-simple,
         pandoc,
         servant,
-        aeson
+        aeson,
+        array
 
 executable aoc
     main-is:          Main.hs
