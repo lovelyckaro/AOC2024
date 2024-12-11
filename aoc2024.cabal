@@ -57,7 +57,8 @@ library
         pandoc,
         servant,
         aeson,
-        array
+        array,
+        mtl
 
 executable aoc
     main-is:          Main.hs
