@@ -52,9 +52,7 @@ minCostProblem maxPresses (ClawMachine (adx, ady) (bdx, bdy) (px, py)) = do
   minimize "cost" (aPresses * 3 + bPresses)
 
 minCost :: Maybe SInteger -> ClawMachine SInteger -> IO (Maybe Integer)
-minCost maxPresses clawmachine = do
-  LexicographicResult res <- optimize Lexicographic (minCostProblem maxPresses clawmachine)
-  return $ getModelValue "cost" res
+minCost maxPresses clawmachine = getModelValue "cost" <$> optLexicographic (minCostProblem maxPresses clawmachine)
 
 correctDim :: (Num n) => ClawMachine n -> ClawMachine n
 correctDim (ClawMachine ba bb (x, y)) = (ClawMachine ba bb (dim + x, dim + y))
