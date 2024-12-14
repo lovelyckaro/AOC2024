@@ -58,7 +58,8 @@ library
         servant,
         aeson,
         array,
-        mtl
+        mtl,
+        ansi-terminal
 
 executable aoc
     main-is:          Main.hs
