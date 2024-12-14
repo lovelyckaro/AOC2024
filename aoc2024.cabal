@@ -59,7 +59,8 @@ library
         aeson,
         array,
         mtl,
-        ansi-terminal
+        ansi-terminal,
+        sbv
 
 executable aoc
     main-is:          Main.hs
