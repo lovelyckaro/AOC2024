@@ -60,7 +60,9 @@ library
         array,
         mtl,
         ansi-terminal,
-        sbv
+        sbv,
+        search-algorithms,
+        fgl
 
 executable aoc
     main-is:          Main.hs
