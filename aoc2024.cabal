@@ -62,7 +62,8 @@ library
         ansi-terminal,
         sbv,
         search-algorithms,
-        fgl
+        fgl,
+        heap
 
 executable aoc
     main-is:          Main.hs
