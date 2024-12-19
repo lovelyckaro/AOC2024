@@ -48,6 +48,7 @@ library
         base >=4.20,
         advent-of-code-api >=0.2.8.0,
         containers,
+        unordered-containers,
         text >=2.1.2,
         tagsoup,
         vector,
