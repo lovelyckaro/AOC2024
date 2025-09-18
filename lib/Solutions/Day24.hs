@@ -7,7 +7,7 @@ import Data.List
 import Data.Map (Map)
 import Data.Map qualified as M
 import Data.Maybe
-import Data.SBV hiding (And, getAnd)
+import Data.SBV hiding (And, getAnd, pred, some)
 import Data.Text (Text)
 import Data.Text qualified as T
 import SantaLib hiding (part1, part2)

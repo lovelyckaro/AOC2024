@@ -7,7 +7,7 @@ import Control.Monad.RWS
 import Data.Array.IArray
 import Data.Bits
 import Data.Proxy
-import Data.SBV hiding (listArray)
+import Data.SBV hiding (listArray, succ)
 import Data.Text (Text)
 import Data.Text qualified as T
 import SantaLib hiding (part1, part2)
